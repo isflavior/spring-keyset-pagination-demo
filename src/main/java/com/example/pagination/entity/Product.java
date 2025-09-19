@@ -1,5 +1,6 @@
 package com.example.pagination.entity;
 
+import com.example.pagination.utils.Sortable;
 import jakarta.persistence.*;
 import org.hibernate.annotations.Formula;
 
@@ -20,6 +21,7 @@ public class Product {
   @GeneratedValue(strategy = GenerationType.IDENTITY)
   private Long id;
 
+  @Sortable
   @Column(nullable = false, precision = 19, scale = 2)
   private BigDecimal price;
 
@@ -27,6 +29,7 @@ public class Product {
   private Instant createdAt = Instant.now();
 
   // Main name for sorting/filtering convenience; derived from product_name table
+  @Sortable("name")
   @Formula("(select pn.text from product_name pn where pn.id_product = id and pn.name_number = 0)")
   private String mainNameText;
 

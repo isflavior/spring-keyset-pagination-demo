@@ -26,20 +26,20 @@ GET http://localhost:8080/api/products/scroll?limit=10
 Filter + sort by name ascending:
 
 ```
-GET http://localhost:8080/api/products/scroll?name=mouse&sort=name&dir=asc&limit=10
+GET http://localhost:8080/api/products/scroll?name=mouse&sort=name&direction=asc&limit=10
 ```
 
 Using cursors (from the response):
 
 ```
-GET /api/products/scroll?cursor=<response.cursors.next>&direction=forward&limit=10
-GET /api/products/scroll?cursor=<response.cursors.prev>&direction=backward&limit=10
+GET /api/products/scroll?cursor=<response.cursors.next>&navigate=forward&limit=10
+GET /api/products/scroll?cursor=<response.cursors.prev>&navigate=backward&limit=10
 ```
 
 ## Notes
 
 - Sortable fields are whitelisted in `SortSpec` and have composite indexes `(field, id)`.
-- Cursors are **opaque** Base64URL tokens containing `{ sortField, direction, filters, keys }`.
+- Cursors are **opaque** Base64URL tokens containing `{ sortField, navigate, filters, keys }`.
 - When filters or sort change, the backend discards any incoming cursor and starts a fresh window.
 - The same sort is used for both directions; “previous” uses a **backward** keyset position built from the **first row**.
 - Keyset columns (`createdAt`, `name`, `price`, `id`) are **NOT NULL** to avoid surprises.

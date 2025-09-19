@@ -1,4 +1,4 @@
-package com.example.pagination.paging;
+package com.example.pagination.utils;
 
 import java.util.Map;
 

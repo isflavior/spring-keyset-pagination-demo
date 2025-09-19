@@ -1,4 +1,4 @@
-package com.example.pagination.search;
+package com.example.pagination.specifications;
 
 import com.example.pagination.entity.Product;
 import org.springframework.data.jpa.domain.Specification;

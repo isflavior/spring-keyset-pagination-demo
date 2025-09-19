@@ -16,18 +16,18 @@ public class ProductController {
   private final ProductService service;
   public ProductController(ProductService service) { this.service = service; }
 
-  // GET /api/products/scroll?name=mouse&price=19.99&sort=name&dir=asc&direction=forward&limit=10&cursor=...
+  // GET /api/products/scroll?name=mouse&price=19.99&sort=name&direction=asc&navigate=forward&limit=10&cursor=...
   @GetMapping("/scroll")
   public ScrollResponse<ProductDto> scroll(
           @RequestParam(name = "name", required = false) String name,
           @RequestParam(name = "price", required = false) BigDecimal price,
           @RequestParam(name = "sort", defaultValue = "createdAt") String sort,
-          @RequestParam(name = "dir", defaultValue = "asc") String dir,
-          @RequestParam(name = "direction", defaultValue = "forward") String direction,
+          @RequestParam(name = "direction", defaultValue = "asc") String direction,
+          @RequestParam(name = "navigate", defaultValue = "forward") String navigate,
           @RequestParam(name = "limit", required = false) Integer limit,
           @RequestParam(name = "cursor", required = false) String cursor
   ) {
-    var r = service.scroll(name, price, sort, dir, cursor, direction, limit);
+    var r = service.findProducts(name, price, sort, direction, cursor, navigate, limit);
     return new ScrollResponse<>(
         r.items().stream().map(ProductDto::from).collect(Collectors.toList()),
         new ScrollResponse.Cursors(r.nextCursor(), r.prevCursor()),
