@@ -30,6 +30,7 @@ public class ProductController {
   // GET /api/products/scroll?name=mouse&price=19.99&sort=name&direction=asc&navigate=forward&limit=10&cursor=...
   @GetMapping("/scroll")
   public ScrollResponse<ProductDto> scroll(
+          @RequestParam(name = "search", required = false) String search,
           @RequestParam(name = "name", required = false) String name,
           @RequestParam(name = "price", required = false) BigDecimal price,
           @RequestParam(name = "sort", defaultValue = "createdAt") String sort,
@@ -51,12 +52,11 @@ public class ProductController {
 
     ProductSort sortObject = new ProductSort(sort, sortDirection);
 
-    ProductService.Result products = service.findProducts(filters, sortObject, cursor, navigate, limit);
+    ProductService.Result products = service.findProducts(search, filters, sortObject, cursor, navigate, limit);
 
     return new ScrollResponse<>(
             products.items().stream().map(ProductDto::from).collect(Collectors.toList()),
-            new ScrollResponse.Cursors(products.nextCursor(), products.prevCursor()),
-            products.hasNext(), products.hasPrev()
+            new ScrollResponse.Cursors(products.nextCursor(), products.prevCursor())
     );
   }
 }

@@ -8,6 +8,7 @@ import com.example.pagination.utils.CursorCodec;
 import com.example.pagination.utils.CursorPayload;
 import com.example.pagination.specifications.ProductSpecs;
 
+import com.example.pagination.utils.FilterOperator;
 import com.example.pagination.utils.SortableUtils;
 import org.springframework.data.domain.*;
 import org.springframework.data.jpa.domain.Specification;
@@ -35,18 +36,26 @@ public class ProductService {
   }
 
   public Result findProducts(
+          String globalSearch,
           ProductFilters filters,
           ProductSort sortObject,
           String cursorToken, String navigate, Integer perPage
   ) {
     int limit = Math.min(perPage != null && perPage > 0 ? perPage : DEFAULT_LIMIT, MAX_LIMIT);
 
-    Specification<Product> spec =  Specification.where(null);
-    if (filters.getName() != null) {
-      spec = spec.and(ProductSpecs.filterByName(filters.getName().getValue(), filters.getName().getOperator()));
-    }
-    if (filters.getPrice() != null) {
-      spec = spec.and(ProductSpecs.filterByPrice(filters.getPrice().getValue(), filters.getPrice().getOperator()));
+    Specification<Product> spec = Specification.where(null);
+
+    // If the user uses the global search, find by name or barcode and ignore other filters
+    if (StringUtils.hasText(globalSearch)) {
+      spec = spec.or(ProductSpecs.filterByName(globalSearch, FilterOperator.CONTAINS));
+      spec = spec.or(ProductSpecs.filterByBarcode(globalSearch, FilterOperator.CONTAINS));
+    } else {
+      if (filters.getName() != null) {
+        spec = spec.and(ProductSpecs.filterByName(filters.getName().getValue(), filters.getName().getOperator()));
+      }
+      if (filters.getPrice() != null) {
+        spec = spec.and(ProductSpecs.filterByPrice(filters.getPrice().getValue(), filters.getPrice().getOperator()));
+      }
     }
 
     Sort sort;
@@ -84,15 +93,13 @@ public class ProductService {
     boolean hasPrev = navigateDirection == ScrollPosition.Direction.FORWARD ? cursor != null : window.hasNext();
     boolean hasNext = navigateDirection == ScrollPosition.Direction.FORWARD ? window.hasNext() : cursor != null;
 
-    return new Result(items, hasNext ? next : null, hasPrev ? prev : null, hasNext, hasPrev);
+    return new Result(items, hasNext ? next : null, hasPrev ? prev : null);
   }
 
   public record Result(
           List<Product> items,
           String nextCursor,
-          String prevCursor,
-          boolean hasNext,
-          boolean hasPrev
+          String prevCursor
   ) {
   }
 }

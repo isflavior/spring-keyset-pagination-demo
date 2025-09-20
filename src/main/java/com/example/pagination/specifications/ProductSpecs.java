@@ -13,6 +13,10 @@ import java.math.BigDecimal;
 public interface ProductSpecs {
   static Specification<Product> filterByName(String name, FilterOperator op) {
     return (root, query, criteriaBuilder) -> {
+      if (!StringUtils.hasText(name)) {
+        return criteriaBuilder.conjunction();
+      }
+
       query.distinct(true);
 
       Join<Product, ProductName> namesJoin = root.join("names");
@@ -44,6 +48,27 @@ public interface ProductSpecs {
         }
         case GREATER_THAN -> {
           return criteriaBuilder.gt(root.get("price"), price);
+        }
+        default -> {
+          return criteriaBuilder.conjunction();
+        }
+      }
+    };
+  }
+
+  static Specification<Product> filterByBarcode(String code, FilterOperator op) {
+    return (root, query, criteriaBuilder) -> {
+      if (!StringUtils.hasText(code)) {
+        return criteriaBuilder.conjunction();
+      }
+
+      // Allowed operators for this field
+      switch (op) {
+        case EQUAL -> {
+          return criteriaBuilder.equal(root.get("price"), code);
+        }
+        case CONTAINS -> {
+          return criteriaBuilder.like(root.get("barcode"), code.toLowerCase() + "%");
         }
         default -> {
           return criteriaBuilder.conjunction();

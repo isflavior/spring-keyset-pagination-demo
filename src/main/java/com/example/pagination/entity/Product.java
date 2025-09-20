@@ -2,6 +2,8 @@ package com.example.pagination.entity;
 
 import com.example.pagination.utils.Sortable;
 import jakarta.persistence.*;
+import lombok.Getter;
+import lombok.Setter;
 import org.hibernate.annotations.Formula;
 
 import java.math.BigDecimal;
@@ -16,6 +18,8 @@ import java.util.List;
     @Index(name = "ix_products_price_id", columnList = "price,id")
   }
 )
+@Getter
+@Setter
 public class Product {
   @Id
   @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -28,6 +32,9 @@ public class Product {
   @Column(nullable = false, columnDefinition = "timestamp")
   private Instant createdAt = Instant.now();
 
+  @Column(nullable = false)
+  private String barcode;
+
   // Main name for sorting/filtering convenience; derived from product_name table
   @Sortable("name")
   @Formula("(select pn.text from product_name pn where pn.id_product = id and pn.name_number = 0)")
@@ -35,19 +42,4 @@ public class Product {
 
   @OneToMany(mappedBy = "product", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
   private List<ProductName> names = new ArrayList<>();
-
-  public Product() {}
-  public Product(BigDecimal price, Instant createdAt) {
-    this.price = price; this.createdAt = createdAt;
-  }
-
-  public Long getId() { return id; }
-  public void setId(Long id) { this.id = id; }
-  public BigDecimal getPrice() { return price; }
-  public void setPrice(BigDecimal price) { this.price = price; }
-  public Instant getCreatedAt() { return createdAt; }
-  public void setCreatedAt(Instant createdAt) { this.createdAt = createdAt; }
-  public List<ProductName> getNames() { return names; }
-  public void setNames(List<ProductName> names) { this.names = names; }
-  public String getMainNameText() { return mainNameText; }
 }
