@@ -2,7 +2,7 @@
 
 This project demonstrates **cursor-based (keyset) pagination** with **Spring Data JPA Scroll API**, plus:
 - user-selected sorting (whitelisted, stable + unique order),
-- filters via `Specification` (`name` contains, case-insensitive; `price` equals),
+- filters via `Specification`
 - forward & backward navigation with **opaque cursors** that include sort + filters.
 
 ## Build & Run
