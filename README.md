@@ -23,10 +23,10 @@ First window (newest first by default):
 GET http://localhost:8080/api/products/scroll?limit=10
 ```
 
-Filter + sort by name ascending:
+Filter + sort by price ascending:
 
 ```
-GET http://localhost:8080/api/products/scroll?name=mouse&sort=name&direction=asc&limit=10
+GET http://localhost:8080/api/products/scroll?name=mouse&sort=price&direction=asc&limit=10
 ```
 
 Using cursors (from the response):
