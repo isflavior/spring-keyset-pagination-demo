@@ -37,9 +37,9 @@ public class ProductService {
   public Result findProducts(
           ProductFilters filters,
           ProductSort sortObject,
-          String cursorToken, String navigate, Integer limitReq
+          String cursorToken, String navigate, Integer perPage
   ) {
-    int limit = Math.min(limitReq != null && limitReq > 0 ? limitReq : DEFAULT_LIMIT, MAX_LIMIT);
+    int limit = Math.min(perPage != null && perPage > 0 ? perPage : DEFAULT_LIMIT, MAX_LIMIT);
 
     Specification<Product> spec =  Specification.where(null);
     if (filters.getName() != null) {
@@ -51,7 +51,6 @@ public class ProductService {
 
     Sort sort;
     Set<String> sortableFields = SortableUtils.getSortableFields(Product.class);
-
     String sortField = sortObject.getField();
 
     if (StringUtils.hasText(sortField) && sortableFields.contains(sortField)) {
