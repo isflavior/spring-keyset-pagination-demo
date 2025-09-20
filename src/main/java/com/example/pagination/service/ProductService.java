@@ -83,8 +83,8 @@ public class ProductService {
       next = codec.encode(new CursorPayload(sortField, filtersMap, lastKeys));
     }
 
-    boolean hasPrev = cursor != null;
-    boolean hasNext = window.hasNext();
+    boolean hasPrev = navigateDirection == ScrollPosition.Direction.FORWARD ? cursor != null : window.hasNext();
+    boolean hasNext = navigateDirection == ScrollPosition.Direction.FORWARD ? window.hasNext() : cursor != null;
 
     return new Result(items, hasNext ? next : null, hasPrev ? prev : null, hasNext, hasPrev);
   }
