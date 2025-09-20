@@ -21,7 +21,7 @@ public class DataLoader {
       if (repo.count() > 0) return;
       Random rnd = new Random(42);
       String[] bases = {"Mouse","Keyboard","Headset","Monitor","USB Cable","Charger","Webcam","Lamp","Stand","Mat","Speaker","SSD","HDD","CPU","GPU","RAM","Router","Switch","Microphone","Tripod"};
-      IntStream.range(0, 11).forEach(i -> {
+      IntStream.range(0, 200).forEach(i -> {
         Product p = new Product(
             BigDecimal.valueOf(5 + rnd.nextInt(400) + rnd.nextDouble()).setScale(2, BigDecimal.ROUND_HALF_UP),
             Instant.now().minusSeconds((long) rnd.nextInt(60*60*24*90))

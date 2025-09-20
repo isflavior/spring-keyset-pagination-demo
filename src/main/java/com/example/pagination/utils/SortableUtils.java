@@ -16,4 +16,19 @@ public class SortableUtils {
             })
             .collect(Collectors.toSet());
   }
+
+  public static String getSortableFieldName(Class<?> clazz, String name) {
+    return Stream.of(clazz.getDeclaredFields())
+            .filter(field -> field.isAnnotationPresent(Sortable.class))
+            .filter(field -> {
+                if (field.getName().equals(name))
+                  return true;
+                Sortable annotation = field.getAnnotation(Sortable.class);
+                String sortableValue = annotation.value();
+                return sortableValue != null && !sortableValue.isEmpty() && sortableValue.equals(name);
+            })
+            .map(field -> field.getName())
+            .findFirst()
+            .orElse(null);
+  }
 }
