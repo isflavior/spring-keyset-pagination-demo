@@ -15,7 +15,6 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.math.BigDecimal;
-import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/api/products")
@@ -49,14 +48,8 @@ public class ProductController {
 
     Sort.Direction sortDirection = direction.equalsIgnoreCase("DESC") ?
             Sort.Direction.DESC : Sort.Direction.ASC;
-
     ProductSort sortObject = new ProductSort(sort, sortDirection);
 
-    ProductService.Result products = service.findProducts(search, filters, sortObject, cursor, navigate, limit);
-
-    return new ScrollResponse<>(
-            products.items().stream().map(ProductDto::from).collect(Collectors.toList()),
-            new ScrollResponse.Cursors(products.nextCursor(), products.prevCursor())
-    );
+    return service.findProducts(search, filters, sortObject, cursor, navigate, limit);
   }
 }

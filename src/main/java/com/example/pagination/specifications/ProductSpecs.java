@@ -67,7 +67,7 @@ public interface ProductSpecs {
         case EQUAL -> {
           return criteriaBuilder.equal(root.get("price"), code);
         }
-        case CONTAINS -> {
+        case STARTS_WITH -> {
           return criteriaBuilder.like(root.get("barcode"), code.toLowerCase() + "%");
         }
         default -> {
