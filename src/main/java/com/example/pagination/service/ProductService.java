@@ -77,9 +77,8 @@ public class ProductService {
       Map<String, Object> firstKeys = sortObject.toCursorKeys(first);
       Map<String, Object> lastKeys = sortObject.toCursorKeys(last);
 
-      Map<String, Object> filtersMap = filters.toCursorFilterMap();
-      prev = codec.encode(new CursorPayload(sortField, filtersMap, firstKeys));
-      next = codec.encode(new CursorPayload(sortField, filtersMap, lastKeys));
+      prev = codec.encode(new CursorPayload(firstKeys));
+      next = codec.encode(new CursorPayload(lastKeys));
     }
 
     boolean hasPrev = navigateDirection == ScrollPosition.Direction.FORWARD ? cursor != null : window.hasNext();

@@ -1,13 +1,13 @@
 package com.example.pagination.specifications;
 
 import com.example.pagination.entity.Product;
-import com.example.pagination.utils.AbstractFilter;
-import com.example.pagination.utils.FilterValue;
 import com.example.pagination.utils.SortableUtils;
-import lombok.*;
+import lombok.EqualsAndHashCode;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 import org.springframework.data.domain.Sort;
 
-import java.math.BigDecimal;
 import java.util.HashMap;
 import java.util.Map;
 
