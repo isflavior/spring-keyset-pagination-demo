@@ -39,21 +39,35 @@ public class ProductService {
     this.productMapper = productMapper;
   }
 
+  /**
+   * Finds products using keyset pagination, supporting global search, filters, sorting, and cursor-based navigation.
+   *
+   * @param search Global search string (matches name or barcode). If present, filters are ignored.
+   * @param filters Field-specific filters (name, price, etc.)
+   * @param sortObject Sorting field and direction
+   * @param cursorToken Encoded cursor for pagination
+   * @param navigate Direction to paginate ("forward" or "backward")
+   * @param perPage Number of items per page (limit)
+   * @return ScrollResponse containing product DTOs and next/prev cursors
+   */
   public ScrollResponse<ProductDto> findProducts(
           String search,
           ProductFilters filters,
           ProductSort sortObject,
           String cursorToken, String navigate, Integer perPage
   ) {
+    // Determine the page size, enforcing min/max limits
     int limit = Math.min(perPage != null && perPage > 0 ? perPage : DEFAULT_LIMIT, MAX_LIMIT);
 
+    // Start with an empty specification (no filters)
     Specification<Product> spec = Specification.where(null);
 
-    // If the user uses the global search, find by name or barcode and ignore other filters
+    // If global search is used, filter by name or barcode and ignore other filters
     if (StringUtils.hasText(search)) {
       spec = spec.or(ProductSpecs.filterByName(search, FilterOperator.CONTAINS));
       spec = spec.or(ProductSpecs.filterByBarcode(search, FilterOperator.STARTS_WITH));
     } else {
+      // Otherwise, apply field-specific filters if present
       if (filters.getName() != null) {
         spec = spec.and(ProductSpecs.filterByName(filters.getName().getValue(), filters.getName().getOperator()));
       }
@@ -62,6 +76,7 @@ public class ProductService {
       }
     }
 
+    // Build the sort order, always including 'id' for stable keyset pagination
     Sort sort;
     Set<String> sortableFields = SortableUtils.getSortableFields(Product.class);
     String sortField = sortObject.getField();
@@ -72,16 +87,22 @@ public class ProductService {
       sort = Sort.by(new Sort.Order(sortObject.getDirection(), "id"));
     }
 
+    // Decode the cursor token to get the current position
     CursorPayload cursor = codec.decode(cursorToken);
 
+    // Determine the scroll direction (forward/backward)
     ScrollPosition.Direction navigateDirection = navigate.equalsIgnoreCase("backward") ?
             ScrollPosition.Direction.BACKWARD : ScrollPosition.Direction.FORWARD;
+    // Convert cursor payload to ScrollPosition
     ScrollPosition position = CursorCodec.toPosition(cursor, navigateDirection);
 
+    // Query the repository using specification, sort, limit, and scroll position
     Window<Product> window = repo.findBy(spec, q -> q.sortBy(sort).limit(limit).scroll(position));
 
+    // Map entities to DTOs
     List<ProductDto> items = window.getContent().stream().map(productMapper::toDto).toList();
 
+    // Prepare next/prev cursor tokens for pagination
     String next = null, prev = null;
     if (!window.getContent().isEmpty()) {
       Product first = window.getContent().getFirst();
@@ -94,9 +115,11 @@ public class ProductService {
       next = codec.encode(new CursorPayload(lastKeys));
     }
 
+    // Determine if there are previous/next pages
     boolean hasPrev = navigateDirection == ScrollPosition.Direction.FORWARD ? cursor != null : window.hasNext();
     boolean hasNext = navigateDirection == ScrollPosition.Direction.FORWARD ? window.hasNext() : cursor != null;
 
+    // Return paginated response
     return new ScrollResponse<>(items, hasNext ? next : null, hasPrev ? prev : null);
   }
 }
