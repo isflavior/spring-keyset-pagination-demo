@@ -54,16 +54,15 @@ public class ProductController {
   ) {
     // Build filter object from request parameters
     ProductFilters filters = new ProductFilters();
-    if (org.springframework.util.StringUtils.hasText(name)) {
-      filters.setName(new com.example.pagination.utils.FilterValue<>(name, com.example.pagination.utils.FilterOperator.CONTAINS));
+    if (StringUtils.hasText(name)) {
+      filters.setName(new FilterValue<>(name, FilterOperator.CONTAINS));
     }
     if (price != null) {
-      filters.setPrice(new com.example.pagination.utils.FilterValue<>(price, com.example.pagination.utils.FilterOperator.GREATER_THAN));
+      filters.setPrice(new FilterValue<>(price, FilterOperator.GREATER_THAN));
     }
 
     // Parse sort direction and build sort object
-    org.springframework.data.domain.Sort.Direction sortDirection = direction.equalsIgnoreCase("DESC") ?
-            org.springframework.data.domain.Sort.Direction.DESC : org.springframework.data.domain.Sort.Direction.ASC;
+    Sort.Direction sortDirection = direction.equalsIgnoreCase("DESC") ? Sort.Direction.DESC : Sort.Direction.ASC;
     ProductSort sortObject = new ProductSort(sort, sortDirection);
 
     // Delegate to service for paginated product retrieval
