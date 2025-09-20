@@ -41,6 +41,5 @@ GET /api/products/scroll?cursor=<response.cursors.prev>&navigate=backward&limit=
 - Sortable fields are marked with the @Sortable annotation.
 - Sorting is stable and unique, i.e. the same sort order is always returned for the same query.
 - Cursors are **opaque** Base64URL tokens containing `{ sortField, filters, keys }`.
-- When filters or sort change, the backend discards any incoming cursor and starts a fresh window.
 - The same sort is used for both directions; “previous” uses a **backward** keyset position built from the **first row**.
 - Keyset columns (`createdAt`, `name`, `price`, `id`) are **NOT NULL** to avoid surprises.
