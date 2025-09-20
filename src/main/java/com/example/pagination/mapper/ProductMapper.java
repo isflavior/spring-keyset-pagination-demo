@@ -7,6 +7,6 @@ import org.mapstruct.Mapping;
 
 @Mapper(componentModel = "spring")
 public interface ProductMapper {
-    @Mapping(target = "name", source = "mainNameText")
+    @Mapping(target = "name", source = "mainName")
     ProductDto toDto(Product product);
 }

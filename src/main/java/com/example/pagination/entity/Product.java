@@ -38,7 +38,7 @@ public class Product {
   // Main name for sorting/filtering convenience; derived from product_name table
   @Sortable("name")
   @Formula("(select pn.text from product_name pn where pn.id_product = id and pn.name_number = 0)")
-  private String mainNameText;
+  private String mainName;
 
   @OneToMany(mappedBy = "product", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
   private List<ProductName> names = new ArrayList<>();

@@ -36,7 +36,7 @@ public class ProductSort {
     if (this.field == null) return keys;
 
     switch (this.field) {
-      case "name" -> keys.put("mainNameText", p.getMainNameText());
+      case "name" -> keys.put("mainName", p.getMainName());
       case "price" -> keys.put("price", p.getPrice());
       case "created_at" -> keys.put("createdAt", p.getCreatedAt());
     }
